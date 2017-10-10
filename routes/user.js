@@ -1,29 +1,29 @@
 var express = require('express');
 var router = express.Router();
 var User = require('../models/Users');
-var byscrpt = require('bcryptjs')
+var bycrypt = require('bcryptjs');
 
 router.post('/', function (req, res, next) {
     var user = req.body;
     var user = new User({
-        fisrtName: user.fisrtName,
+        firstName: user.firstName,
         lastName: user.lastName,
-        password: bcrypt.hashSync(user.password, 10),
+        password: bycrypt.hashSync(user.password, 10),
         email: user.email
     });
-    user.save(function(err, res){
+    user.save(function(err, user){
         if(err){
             return res.status(500).json({
                 title: 'an error occured',
                 error: err
-            })
+            });
         }
         res.status(201).json({
-            message: 'user created',
-            obj: res
+            message: 'User created',
+            obj: user
         });
     });
-    res.redirect('/');
+    // res.redirect('/');
 });
 
 

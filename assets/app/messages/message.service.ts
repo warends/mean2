@@ -13,7 +13,6 @@ export class MessageService {
     constructor(private http: Http) {}
 
     addMessage(message: Message){
-        // this.messages.push(message);
         const body = JSON.stringify(message);
         const headers = new Headers({'Content-Type': 'application/json'});
         return this.http.post('http://localhost:8080/message', body, {headers: headers})

@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var Message = require('../models/Message');
+var jwt = require('jsonwebtoken');
+var User = require('../models/Users'); 
 
 router.get('/', (req, res, next)=>{
     var messages = Message.find()
@@ -19,21 +21,45 @@ router.get('/', (req, res, next)=>{
 
 });
 
-router.post('/', (req, res, next)=>{
-    var msg = req.body;
-    var message = new Message({
-        content: msg.content
-    });
-    message.save((err, response)=>{
+router.use('/', (req, res, next) => {
+    jwt.verify(req.query.token, 'secret', (err, decoded)=>{
         if(err) {
-            return res.status(500).json({
-                title: 'there was a error saving',
+            return res.status(401).json({
+                title: 'Not Authenticated',
                 error: err
             });
         }
-        res.status(201).json({
-            message: 'saved message',
-            obj: response
+        next();
+    });
+});
+
+router.post('/', (req, res, next)=>{
+    var msg = req.body;
+    var decoded = jwt.decode(req.query.token);
+    User.findById(decoded.user_id, (err, user) =>{
+        if(err) {
+            return res.status(500).json({
+                title: 'an error occured',
+                error: err
+            });
+        }
+        var message = new Message({
+            content: msg.content,
+            user: user
+        });
+        message.save((err, message)=>{
+            if(err) {
+                return res.status(500).json({
+                    title: 'there was a error saving',
+                    error: err
+                });
+            }
+            user.messages.push(message);
+            user.save();
+            res.status(201).json({
+                message: 'saved message',
+                obj: message
+            });
         });
     });
 });

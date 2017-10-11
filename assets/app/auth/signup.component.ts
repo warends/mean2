@@ -15,19 +15,19 @@ export class SignupComponent implements OnInit{
 
     ngOnInit(){
         this.myForm = new FormGroup({
-            firstName: new FormControl(null, Validators.required),
-            lastName: new FormControl(null, Validators.required),
             email: new FormControl(null, Validators.required),
-            password: new FormControl(null, Validators.required)
+            password: new FormControl(null, Validators.required),
+            firstName: new FormControl(null, Validators.required),
+            lastName: new FormControl(null, Validators.required)
         });
     };
 
     onSubmit(){
         const user = new User(
-            this.myForm.value.firstName,
-            this.myForm.value.lastName,
             this.myForm.value.email,
-            this.myForm.value.password
+            this.myForm.value.password,
+            this.myForm.value.firstName,
+            this.myForm.value.lastName
         );
         this.authService.signup(user)
             .subscribe(
